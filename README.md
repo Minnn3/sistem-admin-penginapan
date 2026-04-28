@@ -152,4 +152,10 @@ Password : admin123
 
 ## 📄 Lisensi
 
-Proyek ini dikembangkan untuk kebutuhan internal **Hocky Guest House**. AMN.
+Proyek ini dikembangkan untuk keperluan pembelajaran dan kebutuhan internal **Hocky Guest House**.
+
+---
+
+> Dibuat dengan ❤️ menggunakan [Laravel](https://laravel.com) dan [Google Antigravity]
+ 
+> AMN
