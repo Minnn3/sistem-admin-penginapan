@@ -63,7 +63,7 @@
                 <div style="font-size:13px;">Laporan Pendapatan Bulanan</div>
                 <div style="font-size:13px;font-weight:700;">
                     Periode:
-                    {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->isoFormat('MMMM') }}
+                    {{ \Carbon\Carbon::create()->month((int)$bulan)->locale('id')->isoFormat('MMMM') }}
                     {{ $tahun }}
                 </div>
             </td>
@@ -82,7 +82,7 @@
     <a href="{{ route('pendapatan.index', ['bulan' => $bulan, 'tahun' => $tahun, 'cetak' => 1]) }}"
        onclick="window.setTimeout(() => window.print(), 400); return false;"
        class="btn btn-primary" id="btnCetak">
-        🖨 Cetak Laporan {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->isoFormat('MMMM') }} {{ $tahun }}
+        🖨 Cetak Laporan {{ \Carbon\Carbon::create()->month((int)$bulan)->locale('id')->isoFormat('MMMM') }} {{ $tahun }}
     </a>
 </div>
 
@@ -135,13 +135,13 @@
     <div class="table-header">
         <span class="table-title">
             Riwayat Transaksi —
-            {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->isoFormat('MMMM') }} {{ $tahun }}
+            {{ \Carbon\Carbon::create()->month((int)$bulan)->locale('id')->isoFormat('MMMM') }} {{ $tahun }}
         </span>
         {{-- Filter form: sembunyi saat cetak --}}
         <form method="GET" class="filter-bar no-print">
             <select name="bulan" class="form-control" style="width:130px;">
                 @foreach(range(1,12) as $m)
-                    <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM') }}</option>
+                    <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month((int)$m)->locale('id')->isoFormat('MMMM') }}</option>
                 @endforeach
             </select>
             <select name="tahun" class="form-control" style="width:100px;">
@@ -213,12 +213,17 @@
     @endif
 </div>
 
+{{-- Inject data grafik ke JS di dalam @section agar variabel PHP pasti tersedia --}}
+<script>
+    window._grafikBulanan = @json($grafikBulanan);
+</script>
+
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
-const data = <?php echo json_encode($grafikBulanan); ?>;
+const data = window._grafikBulanan;
 new Chart(document.getElementById('chartBulanan').getContext('2d'), {
     type: 'line',
     data: {
