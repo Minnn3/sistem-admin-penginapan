@@ -70,7 +70,7 @@ Sistem manajemen penginapan berbasis web untuk **Hocky Guest House**, dibangun m
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/username/sistem-penginapan.git
+git clone https://github.com/Minnn3/sistem-penginapan.git
 cd sistem-penginapan
 
 # 2. Install dependensi PHP
