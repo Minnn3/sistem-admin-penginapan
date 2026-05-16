@@ -70,8 +70,8 @@ Sistem manajemen penginapan berbasis web untuk **Hocky Guest House**, dibangun m
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/Minnn3/sistem-penginapan.git
-cd sistem-penginapan
+git clone https://github.com/Minnn3/sistem-admin-penginapan.git
+cd sistem-admin-penginapan
 
 # 2. Install dependensi PHP
 composer install
@@ -83,9 +83,12 @@ cp .env.example .env
 php artisan key:generate
 
 # 5. Konfigurasi database di file .env
-# DB_DATABASE=db_penginapan
-# DB_USERNAME=root
-# DB_PASSWORD=
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=db_penginapan
+DB_USERNAME=root
+DB_PASSWORD=
 
 # 6. Jalankan migrasi dan seeder
 php artisan migrate:fresh --seed
