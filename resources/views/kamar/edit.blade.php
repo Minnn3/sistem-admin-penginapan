@@ -5,7 +5,7 @@
 @section('content')
 <div class="section-header">
     <h2 class="section-title">Edit Kamar No. {{ $kamar->nomor_kamar }}</h2>
-    <a href="{{ route('kamar.index') }}" class="btn btn-ghost">← Kembali</a>
+    <a href="{{ route('kamar.index') }}" class="btn btn-ghost"><i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Kembali</a>
 </div>
 
 <div class="form-card">
@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">💾 Update Kamar</button>
+            <button type="submit" class="btn btn-primary">Update Kamar</button>
             <a href="{{ route('kamar.index') }}" class="btn btn-ghost">Batal</a>
         </div>
     </form>

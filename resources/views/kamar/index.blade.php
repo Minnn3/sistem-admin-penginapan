@@ -5,7 +5,7 @@
 @section('content')
 <div class="section-header">
     <h2 class="section-title">Daftar Kamar</h2>
-    <a href="{{ route('kamar.create') }}" class="btn btn-primary">✚ Tambah Kamar</a>
+    <a href="{{ route('kamar.create') }}" class="btn btn-primary">Tambah Kamar</a>
 </div>
 
 <div class="table-card">
@@ -48,25 +48,27 @@
                     <td class="money">Rp {{ number_format($kamar->harga_per_malam, 0, ',', '.') }}</td>
                     <td><span class="badge badge-{{ $kamar->status }}">{{ $kamar->status_label }}</span></td>
                     <td>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                            <a href="{{ route('kamar.edit', $kamar) }}" class="btn btn-xs btn-ghost">✏ Edit</a>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                            <a href="{{ route('kamar.edit', $kamar) }}" class="btn btn-xs btn-ghost">Edit</a>
                             @if($kamar->status === 'kotor')
                                 <form action="{{ route('kamar.ubah-status', $kamar) }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="status" value="tersedia">
-                                    <button class="btn btn-xs btn-success">✓ Bersih</button>
+                                    <button class="btn btn-xs btn-success">Bersih</button>
                                 </form>
                             @elseif($kamar->status === 'tersedia')
                                 <form action="{{ route('kamar.ubah-status', $kamar) }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="status" value="kotor">
-                                    <button class="btn btn-xs btn-warning">🧹 Kotor</button>
+                                    <button class="btn btn-xs btn-ghost">Kotor</button>
                                 </form>
                             @endif
                             <form action="{{ route('kamar.destroy', $kamar) }}" method="POST"
                                   onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-xs btn-danger">🗑</button>
+                                <button class="btn btn-xs btn-danger" style="padding: 4px 6px;">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -75,7 +77,7 @@
                 <tr>
                     <td colspan="6">
                         <div class="empty-state">
-                            <div class="empty-icon">🛏</div>
+                            <i data-lucide="bed-double" class="empty-icon"></i>
                             <div class="empty-title">Belum ada kamar</div>
                         </div>
                     </td>

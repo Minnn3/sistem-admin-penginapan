@@ -12,7 +12,7 @@
         <span class="table-title">Total: {{ $fakturList->total() }} transaksi</span>
         <form method="GET" class="filter-bar">
             <div class="search-input-wrap">
-                <span class="search-icon">🔍</span>
+                <i data-lucide="search" class="search-icon" style="width: 14px; height: 14px;"></i>
                 <input type="text" name="search" class="form-control search-input" value="{{ request('search') }}" placeholder="Kode booking / nama...">
             </div>
             <select name="status" class="form-control" style="width:140px;" onchange="this.form.submit()">
@@ -22,7 +22,9 @@
                 <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
             </select>
             <button type="submit" class="btn btn-ghost">Cari</button>
-            @if(request()->hasAny(['search', 'status'])) <a href="{{ route('faktur.index') }}" class="btn btn-ghost">✕</a> @endif
+            @if(request()->hasAny(['search', 'status'])) 
+                <a href="{{ route('faktur.index') }}" class="btn btn-ghost" style="padding: 9px 12px;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></a> 
+            @endif
         </form>
     </div>
 
@@ -45,7 +47,7 @@
             <tbody>
                 @forelse($fakturList as $f)
                 <tr>
-                    <td class="td-primary">{{ $f->kode_booking }}</td>
+                    <td class="td-primary"><span class="mono">{{ $f->kode_booking }}</span></td>
                     <td>{{ $f->pelanggan->nama ?? '-' }}</td>
                     <td>{{ $f->kamar->nomor_kamar ?? '-' }}</td>
                     <td>{{ \Carbon\Carbon::parse($f->tanggal_checkin)->format('d/m/Y') }}</td>
@@ -54,12 +56,17 @@
                     <td class="money">Rp {{ number_format($f->total_harga, 0, ',', '.') }}</td>
                     <td>{{ $f->pembayaran ? ucfirst($f->pembayaran->metode) : '-' }}</td>
                     <td><span class="badge badge-{{ $f->status }}">{{ ucfirst($f->status) }}</span></td>
-                    <td><a href="{{ route('faktur.show', $f) }}" class="btn btn-xs btn-primary">🧾 Lihat</a></td>
+                    <td>
+                        <a href="{{ route('faktur.show', $f) }}" class="btn btn-xs btn-primary">Lihat Faktur</a>
+                    </td>
                 </tr>
                 @empty
                 <tr>
                     <td colspan="10">
-                        <div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-title">Belum ada faktur</div></div>
+                        <div class="empty-state">
+                            <i data-lucide="file-text" class="empty-icon"></i>
+                            <div class="empty-title">Belum ada faktur</div>
+                        </div>
                     </td>
                 </tr>
                 @endforelse

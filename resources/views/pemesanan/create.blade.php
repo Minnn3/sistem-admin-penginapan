@@ -5,7 +5,7 @@
 @section('content')
 <div class="section-header">
     <h2 class="section-title">Form Check-In Tamu</h2>
-    <a href="{{ route('dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+    <a href="{{ route('dashboard') }}" class="btn btn-ghost"><i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Dashboard</a>
 </div>
 
 <div class="form-card">
@@ -26,7 +26,9 @@
                 </select>
                 @error('kamar_id') <span class="form-error">{{ $message }}</span> @enderror
                 @if($kamarTersedia->isEmpty())
-                    <span class="form-hint" style="color:var(--yellow);">⚠ Tidak ada kamar yang tersedia saat ini.</span>
+                    <span class="form-hint" style="color:var(--amber); display:flex; align-items:center; gap:4px;">
+                        <i data-lucide="alert-triangle" style="width:14px; height:14px;"></i> Tidak ada kamar yang tersedia saat ini.
+                    </span>
                 @endif
             </div>
 
@@ -45,12 +47,12 @@
                     display:none;position:absolute;top:calc(100% - 6px);left:0;right:0;
                     background:var(--bg-elevated);border:1px solid var(--border-light);
                     border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);
-                    max-height:220px;overflow-y:auto;z-index:999;box-shadow:var(--shadow);
+                    max-height:220px;overflow-y:auto;z-index:999;box-shadow:var(--shadow-md);
                 "></div>
 
                 @error('pelanggan_id') <span class="form-error">{{ $message }}</span> @enderror
                 <span class="form-hint">
-                    Belum terdaftar? <a href="{{ route('pelanggan.create') }}" target="_blank" style="color:var(--indigo-light)">Tambah pelanggan baru ↗</a>
+                    Belum terdaftar? <a href="{{ route('pelanggan.create') }}" target="_blank" style="color:var(--primary)">Tambah pelanggan baru</a>
                 </span>
             </div>
 
@@ -71,18 +73,18 @@
             <div class="form-group">
                 <label for="metode_bayar">Metode Pembayaran <span style="color:var(--red)">*</span></label>
                 <select id="metode_bayar" name="metode_bayar" class="form-control {{ $errors->has('metode_bayar') ? 'invalid' : '' }}">
-                    <option value="tunai"    {{ old('metode_bayar') == 'tunai'    ? 'selected' : '' }}>💵 Tunai</option>
-                    <option value="transfer" {{ old('metode_bayar') == 'transfer' ? 'selected' : '' }}>🏦 Transfer Bank</option>
-                    <option value="qris"     {{ old('metode_bayar') == 'qris'     ? 'selected' : '' }}>📱 QRIS</option>
+                    <option value="tunai"    {{ old('metode_bayar') == 'tunai'    ? 'selected' : '' }}>Tunai</option>
+                    <option value="transfer" {{ old('metode_bayar') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
+                    <option value="qris"     {{ old('metode_bayar') == 'qris'     ? 'selected' : '' }}>QRIS</option>
                 </select>
                 @error('metode_bayar') <span class="form-error">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
                 <label>Estimasi Tagihan</label>
-                <div style="background:var(--bg-base);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;">
-                    <div style="font-size:12px;color:var(--text-muted);" id="infoMalam">— pilih kamar & tanggal —</div>
-                    <div style="font-size:20px;font-weight:800;color:var(--indigo-light);" id="totalHarga">—</div>
+                <div style="background:var(--bg-base);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:12px 14px;">
+                    <div style="font-size:12px;color:var(--text-tertiary);" id="infoMalam">— pilih kamar & tanggal —</div>
+                    <div style="font-size:20px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;margin-top:2px;" id="totalHarga">—</div>
                 </div>
             </div>
 
@@ -93,7 +95,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">⬇ Proses Check-In</button>
+            <button type="submit" class="btn btn-primary">Proses Check-In</button>
             <a href="{{ route('dashboard') }}" class="btn btn-ghost">Batal</a>
         </div>
     </form>
@@ -121,24 +123,24 @@ function renderSuggestions(query) {
     const matches = pelangganData.filter(p => p.nama.toLowerCase().includes(q));
 
     if (!matches.length) {
-        suggestionBox.innerHTML = '<div style="padding:12px 14px;color:var(--text-muted);font-size:13px;">Tidak ada hasil. <a href="{{ route("pelanggan.create") }}" target="_blank" style="color:var(--indigo-light)">Tambah baru ↗</a></div>';
+        suggestionBox.innerHTML = '<div style="padding:12px 14px;color:var(--text-tertiary);font-size:13px;">Tidak ada hasil. <a href="{{ route("pelanggan.create") }}" target="_blank" style="color:var(--primary)">Tambah baru</a></div>';
         suggestionBox.style.display = 'block';
         return;
     }
 
     suggestionBox.innerHTML = matches.map(p => `
         <div class="suggestion-item" data-id="${p.id}" data-nama="${p.nama}" style="
-            padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);
+            padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border-light);
             transition:background .15s;
         ">
-            <div style="font-weight:600;font-size:13px;color:var(--text-primary);">${p.nama}</div>
-            <div style="font-size:11px;color:var(--text-muted);">${p.info}</div>
+            <div style="font-weight:500;font-size:13px;color:var(--text-primary);">${p.nama}</div>
+            <div style="font-size:11px;color:var(--text-tertiary);">${p.info}</div>
         </div>
     `).join('');
 
     // Hover effect + click handler
     suggestionBox.querySelectorAll('.suggestion-item').forEach(el => {
-        el.addEventListener('mouseenter', () => el.style.background = 'var(--bg-hover)');
+        el.addEventListener('mouseenter', () => el.style.background = 'var(--bg-base)');
         el.addEventListener('mouseleave', () => el.style.background = '');
         el.addEventListener('mousedown', (e) => {
             e.preventDefault(); // Prevent blur firing before click
@@ -190,4 +192,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 @endpush
-

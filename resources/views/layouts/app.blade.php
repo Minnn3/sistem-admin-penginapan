@@ -8,9 +8,10 @@
     <title>@yield('title', 'Dashboard') — Hocky Guest House</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
     @stack('styles')
 </head>
 
@@ -34,17 +35,17 @@
                     <span class="nav-group-label">Menu Utama</span>
                     <a href="{{ route('dashboard') }}"
                         class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <span class="nav-icon">⊞</span>
+                        <span class="nav-icon"><i data-lucide="layout-dashboard"></i></span>
                         <span class="nav-label">Dashboard</span>
                     </a>
                     <a href="{{ route('kamar.index') }}"
                         class="nav-item {{ request()->routeIs('kamar.*') ? 'active' : '' }}">
-                        <span class="nav-icon">🛏</span>
+                        <span class="nav-icon"><i data-lucide="bed-double"></i></span>
                         <span class="nav-label">Kamar</span>
                     </a>
                     <a href="{{ route('pelanggan.index') }}"
                         class="nav-item {{ request()->routeIs('pelanggan.*') ? 'active' : '' }}">
-                        <span class="nav-icon">👤</span>
+                        <span class="nav-icon"><i data-lucide="users"></i></span>
                         <span class="nav-label">Pelanggan</span>
                     </a>
                 </div>
@@ -52,17 +53,17 @@
                     <span class="nav-group-label">Transaksi</span>
                     <a href="{{ route('pemesanan.create') }}"
                         class="nav-item {{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">
-                        <span class="nav-icon">✚</span>
+                        <span class="nav-icon"><i data-lucide="log-in"></i></span>
                         <span class="nav-label">Check-In</span>
                     </a>
                     <a href="{{ route('faktur.index') }}"
                         class="nav-item {{ request()->routeIs('faktur.*') ? 'active' : '' }}">
-                        <span class="nav-icon">🧾</span>
+                        <span class="nav-icon"><i data-lucide="file-text"></i></span>
                         <span class="nav-label">Faktur</span>
                     </a>
                     <a href="{{ route('pendapatan.index') }}"
                         class="nav-item {{ request()->routeIs('pendapatan.*') ? 'active' : '' }}">
-                        <span class="nav-icon">💰</span>
+                        <span class="nav-icon"><i data-lucide="trending-up"></i></span>
                         <span class="nav-label">Pendapatan</span>
                     </a>
                 </div>
@@ -79,12 +80,7 @@
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn-logout" title="Logout">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
+                        <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
                     </button>
                 </form>
             </div>
@@ -94,7 +90,9 @@
         <div class="main-content">
             <header class="topbar">
                 <div class="topbar-left">
-                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+                    </button>
                     <div class="page-breadcrumb">
                         <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
                     </div>
@@ -107,16 +105,20 @@
             <div class="content-area">
                 @if(session('success'))
                     <div class="alert alert-success">
-                        <span class="alert-icon">✓</span>
+                        <span class="alert-icon"><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i></span>
                         {{ session('success') }}
-                        <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+                        <button class="alert-close" onclick="this.parentElement.remove()">
+                            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                        </button>
                     </div>
                 @endif
                 @if(session('error'))
                     <div class="alert alert-error">
-                        <span class="alert-icon">✕</span>
+                        <span class="alert-icon"><i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i></span>
                         {{ session('error') }}
-                        <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+                        <button class="alert-close" onclick="this.parentElement.remove()">
+                            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                        </button>
                     </div>
                 @endif
 
@@ -126,11 +128,17 @@
     </div>
 
     <script>
+        lucide.createIcons();
+
         document.getElementById('sidebarToggle').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('sidebar').classList.toggle('mobile-open');
         });
+
         setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(el => el.remove());
+            document.querySelectorAll('.alert').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
         }, 5000);
     </script>
     @stack('scripts')
