@@ -26,7 +26,6 @@ class Kamar extends Model
     protected $table = 'kamar';
 
     // Kolom-kolom yang boleh diisi via Kamar::create() atau $kamar->update()
-    // Kolom yang tidak ada di sini tidak bisa diubah secara massal (mass assignment protection)
     protected $fillable = [
         'nomor_kamar',
         'nama_kamar',
@@ -34,19 +33,19 @@ class Kamar extends Model
         'harga_per_malam',
         'status',
         'deskripsi',
+        'is_aktif',  // true = kamar operasional, false = nonaktif/maintenance/gudang
     ];
 
     // Konversi tipe data otomatis saat mengambil dari database
-    // 'decimal:2' = selalu 2 angka di belakang koma
     protected $casts = [
         'harga_per_malam' => 'decimal:2',
+        'is_aktif'        => 'boolean', // otomatis jadi true/false (bukan 1/0)
     ];
 
     // ── RELASI ───────────────────────────────────────────────────────────────
 
     /**
      * Satu kamar bisa punya banyak pemesanan (riwayat).
-     * Digunakan untuk cek apakah kamar pernah dipakai, dll.
      */
     public function pemesanan(): HasMany
     {
@@ -55,8 +54,7 @@ class Kamar extends Model
 
     /**
      * Mengambil SATU pemesanan aktif saat ini (jika ada).
-     * Digunakan di dashboard untuk tampilkan nama tamu yang menginap.
-     * hasOne = ambil hanya satu, dengan kondisi status = 'aktif'
+     * Digunakan di dashboard untuk tampilkan nama tamu + info deposit.
      */
     public function pemesananAktif()
     {
@@ -65,12 +63,30 @@ class Kamar extends Model
             ->with('pelanggan'); // sertakan data pelanggan sekaligus
     }
 
-    // ── ACCESSOR (properti virtual) ──────────────────────────────────────────
-    // Accessor = properti yang bisa dipanggil seperti $kamar->status_badge
-    // tapi sebenarnya dihitung dari data yang ada, bukan kolom database
+    // ── SCOPE ────────────────────────────────────────────────────────────────
 
     /**
-     * CSS class untuk badge status kamar.
+     * Scope untuk filter kamar yang aktif saja.
+     * Penggunaan: Kamar::aktif()->get()
+     */
+    public function scopeAktif($query)
+    {
+        return $query->where('is_aktif', true);
+    }
+
+    /**
+     * Scope untuk filter kamar yang tidak aktif.
+     * Penggunaan: Kamar::nonaktif()->get()
+     */
+    public function scopeNonaktif($query)
+    {
+        return $query->where('is_aktif', false);
+    }
+
+    // ── ACCESSOR (properti virtual) ──────────────────────────────────────────
+
+    /**
+     * CSS class untuk badge status operasional kamar.
      * Contoh: $kamar->status_badge → 'badge-tersedia'
      */
     public function getStatusBadgeAttribute(): string
@@ -95,5 +111,23 @@ class Kamar extends Model
             'kotor'    => 'Perlu Dibersihkan',
             default    => 'Tersedia',
         };
+    }
+
+    /**
+     * Label untuk status aktif/nonaktif kamar.
+     * Contoh: $kamar->aktif_label → 'Aktif' atau 'Nonaktif'
+     */
+    public function getAktifLabelAttribute(): string
+    {
+        return $this->is_aktif ? 'Aktif' : 'Nonaktif';
+    }
+
+    /**
+     * CSS class badge untuk status aktif/nonaktif kamar.
+     * Contoh: $kamar->aktif_badge → 'badge-tersedia' atau 'badge-nonaktif'
+     */
+    public function getAktifBadgeAttribute(): string
+    {
+        return $this->is_aktif ? 'badge-tersedia' : 'badge-nonaktif';
     }
 }

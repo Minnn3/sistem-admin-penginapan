@@ -40,7 +40,7 @@
         </div>
         <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
             <a href="{{ route('pelanggan.edit', $pelanggan) }}" class="btn btn-ghost btn-full">Edit Data</a>
-            <a href="{{ route('pemesanan.create', ['pelanggan_id' => $pelanggan->id]) }}" class="btn btn-primary btn-full">Check-In</a>
+            <a href="{{ route('transaksi.create') }}" class="btn btn-primary btn-full">Check-In</a>
         </div>
     </div>
 

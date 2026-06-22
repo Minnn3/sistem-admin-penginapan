@@ -648,6 +648,18 @@ input, select, textarea {
     color: var(--text-tertiary);
 }
 
+/* Badge nonaktif — untuk kamar yang dinonaktifkan */
+.badge-nonaktif {
+    background: var(--bg-muted);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border);
+}
+
+/* Room status dot — kamar nonaktif */
+.room-status-dot.nonaktif {
+    background: var(--border-hover);
+}
+
 /* =============================================
    BUTTONS
    ============================================= */

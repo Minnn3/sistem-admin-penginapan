@@ -4,26 +4,26 @@
 
 @section('content')
 <div class="section-header">
-    <h2 class="section-title">Daftar Faktur</h2>
+    <div>
+        <h2 class="section-title">Riwayat Faktur</h2>
+        <p style="font-size:13px;color:var(--text-tertiary);margin:4px 0 0;">Faktur dari tamu yang sudah check-out</p>
+    </div>
 </div>
 
 <div class="table-card">
     <div class="table-header">
-        <span class="table-title">Total: {{ $fakturList->total() }} transaksi</span>
+        <span class="table-title">Total: {{ $fakturList->total() }} faktur</span>
         <form method="GET" class="filter-bar">
             <div class="search-input-wrap">
                 <i data-lucide="search" class="search-icon" style="width: 14px; height: 14px;"></i>
-                <input type="text" name="search" class="form-control search-input" value="{{ request('search') }}" placeholder="Kode booking / nama...">
+                <input type="text" name="search" class="form-control search-input"
+                    value="{{ request('search') }}" placeholder="Kode booking / nama tamu...">
             </div>
-            <select name="status" class="form-control" style="width:140px;" onchange="this.form.submit()">
-                <option value="">Semua Status</option>
-                <option value="aktif"      {{ request('status') == 'aktif'      ? 'selected' : '' }}>Aktif</option>
-                <option value="selesai"    {{ request('status') == 'selesai'    ? 'selected' : '' }}>Selesai</option>
-                <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-            </select>
             <button type="submit" class="btn btn-ghost">Cari</button>
-            @if(request()->hasAny(['search', 'status'])) 
-                <a href="{{ route('faktur.index') }}" class="btn btn-ghost" style="padding: 9px 12px;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></a> 
+            @if(request()->filled('search'))
+                <a href="{{ route('faktur.index') }}" class="btn btn-ghost" style="padding: 9px 12px;">
+                    <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                </a>
             @endif
         </form>
     </div>

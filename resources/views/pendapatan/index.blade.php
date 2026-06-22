@@ -6,13 +6,20 @@
 <style>
 /* ── Print CSS — hanya aktif saat mencetak ── */
 @media print {
-    @page { margin: 0; }
-    body { 
-        margin: 1.6cm; 
-        -webkit-print-color-adjust: exact !important; 
-        print-color-adjust: exact !important; 
+    @page {
+        size: A4 portrait;
+        margin: 0.8cm 1cm;
     }
-    
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        margin: 0 !important;
+        font-size: 11px !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
     /* Sembunyikan elemen navigasi & UI */
     .sidebar, .topbar, .no-print,
     .stats-grid, .table-card .table-header form,
@@ -20,37 +27,68 @@
 
     /* Hilangkan margin kiri dari sidebar */
     .main-content { margin: 0 !important; }
-    .content-area { padding: 12px !important; }
+    .content-area { padding: 0 !important; }
 
-    /* Latar belakang putih, teks hitam agar tinta hemat */
+    /* Latar belakang putih, teks hitam */
     body, .table-card, table, th, td {
         background: #fff !important;
         color: #000 !important;
-        border-color: #ddd !important;
+        border-color: #ccc !important;
     }
 
-    /* Tampilkan header print yang disembunyikan di layar */
+    /* Table card: hapus shadow & rounded corners */
+    .table-card {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Table header (judul tabel) */
+    .table-header {
+        padding: 0 0 8px !important;
+        border-bottom: 1px solid #ccc !important;
+    }
+
+    /* Kompres th & td untuk fit lebih banyak baris */
+    th {
+        padding: 6px 8px !important;
+        font-size: 10px !important;
+    }
+    td {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+    }
+
+    /* Tampilkan header print */
     .print-header { display: block !important; }
 
-    /* Pastikan tabel tidak terpotong antar halaman */
+    /* Hindari baris terpotong antar halaman */
     tr { page-break-inside: avoid; }
 
-    /* Tombol faktur tidak perlu muncul di print */
+    /* Sembunyikan tombol faktur */
     .btn-xs { display: none !important; }
 
-    /* Badge metode agar tetap terbaca */
-    .badge { border: 1px solid #999 !important; background: transparent !important; color: #000 !important; }
+    /* Badge metode tetap terbaca */
+    .badge {
+        border: 1px solid #666 !important;
+        background: transparent !important;
+        color: #000 !important;
+        padding: 1px 6px !important;
+    }
 
-    /* Total di bawah tabel */
-    .print-total { display: block !important; }
+    /* Baris total */
+    tfoot tr td {
+        padding: 8px !important;
+        font-size: 12px !important;
+    }
 }
 
 /* Header print — disembunyikan di layar, muncul saat print */
 .print-header {
     display: none;
-    margin-bottom: 24px;
-    border-bottom: 2px solid #333;
-    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 12px;
 }
 .print-total { display: none; }
 </style>
@@ -62,22 +100,22 @@
 <div class="print-header">
     <table style="width:100%;border:none;">
         <tr>
-            <td style="border:none;padding:0;vertical-align:middle;width:70px;">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:64px;height:64px;object-fit:contain;">
+            <td style="border:none;padding:0;vertical-align:middle;width:56px;">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:48px;height:48px;object-fit:contain;">
             </td>
-            <td style="border:none;padding:0 0 0 16px;vertical-align:middle;">
-                <div style="font-size:22px;font-weight:700; letter-spacing:-0.02em;">Hocky Guest House</div>
-                <div style="font-size:14px; color:#555;">Laporan Pendapatan Bulanan</div>
-                <div style="font-size:14px;font-weight:600; margin-top: 4px;">
+            <td style="border:none;padding:0 0 0 12px;vertical-align:middle;">
+                <div style="font-size:18px;font-weight:700;letter-spacing:-0.02em;">Hocky Guest House</div>
+                <div style="font-size:12px;color:#555;">Laporan Pendapatan</div>
+                <div style="font-size:12px;font-weight:600;margin-top:2px;">
                     Periode:
                     {{ \Carbon\Carbon::create()->month((int)$bulan)->locale('id')->isoFormat('MMMM') }}
                     {{ $tahun }}
                 </div>
             </td>
-            <td style="border:none;padding:0;text-align:right;vertical-align:top;font-size:12px;color:#555;">
+            <td style="border:none;padding:0;text-align:right;vertical-align:top;font-size:11px;color:#555;">
                 Dicetak: {{ now()->format('d M Y, H:i') }} WIB<br>
                 Total Transaksi: {{ $transaksi->count() }} transaksi<br>
-                Total Pendapatan: <strong style="font-size:14px; color:#000;">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</strong>
+                Total Pendapatan: <strong style="font-size:13px;color:#000;">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</strong>
             </td>
         </tr>
     </table>

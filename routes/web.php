@@ -20,60 +20,61 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FakturController;
 use App\Http\Controllers\KamarController;
 use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PendapatanController;
 use Illuminate\Support\Facades\Route;
 
 // ── ROUTE AUTENTIKASI (tidak perlu login) ────────────────────────────────────
-// Halaman form login
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-// Proses login (POST = kirim form)
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-// Proses logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ── ROUTE YANG MEMBUTUHKAN LOGIN ──────────────────────────────────────────────
-// middleware('auth') → Laravel otomatis redirect ke /login jika belum login
 Route::middleware('auth')->group(function () {
 
     // Redirect dari "/" langsung ke dashboard
     Route::get('/', fn() => redirect()->route('dashboard'));
 
     // ── DASHBOARD ──────────────────────────────────────────────────────────────
-    // Halaman utama — menampilkan status semua kamar + statistik
+    // Halaman informasi — status kamar, statistik, monitoring
+    // (tidak ada aksi check-in/out di sini — semua pindah ke Transaksi)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // ── KAMAR ──────────────────────────────────────────────────────────────────
-    // Route::resource otomatis membuat 7 route CRUD sekaligus:
-    //   GET    /kamar              → index   (daftar kamar)
-    //   GET    /kamar/create       → create  (form tambah)
-    //   POST   /kamar              → store   (simpan baru)
-    //   GET    /kamar/{id}         → show    (detail — jarang dipakai)
-    //   GET    /kamar/{id}/edit    → edit    (form edit)
-    //   PUT    /kamar/{id}         → update  (simpan perubahan)
-    //   DELETE /kamar/{id}         → destroy (hapus)
-    Route::resource('kamar', KamarController::class);
+    // CRUD kamar — TANPA route destroy (hapus dihilangkan, diganti toggleAktif)
+    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar.index');
+    Route::get('/kamar/create', [KamarController::class, 'create'])->name('kamar.create');
+    Route::post('/kamar', [KamarController::class, 'store'])->name('kamar.store');
+    Route::get('/kamar/{kamar}/edit', [KamarController::class, 'edit'])->name('kamar.edit');
+    Route::put('/kamar/{kamar}', [KamarController::class, 'update'])->name('kamar.update');
 
-    // Route tambahan: ubah status kamar (tersedia / kotor)
-    // POST karena ada perubahan data
+    // Toggle aktif / nonaktif kamar (menggantikan destroy)
+    Route::post('/kamar/{kamar}/toggle-aktif', [KamarController::class, 'toggleAktif'])->name('kamar.toggle-aktif');
+
+    // Ubah status kamar (tersedia / kotor) — untuk tandai sudah dibersihkan
     Route::post('/kamar/{kamar}/status', [KamarController::class, 'ubahStatus'])->name('kamar.ubah-status');
 
     // ── PELANGGAN ──────────────────────────────────────────────────────────────
-    // CRUD pelanggan — sama seperti kamar
+    // CRUD pelanggan — lengkap termasuk detail (show)
     Route::resource('pelanggan', PelangganController::class);
 
-    // ── PEMESANAN / CHECK-IN / CHECK-OUT ───────────────────────────────────────
-    // Form check-in tamu baru
-    Route::get('/checkin', [PemesananController::class, 'create'])->name('pemesanan.create');
-    // Proses simpan check-in (POST)
-    Route::post('/checkin', [PemesananController::class, 'store'])->name('pemesanan.store');
-    // Proses check-out berdasarkan ID pemesanan
-    Route::post('/checkout/{pemesanan}', [PemesananController::class, 'checkout'])->name('pemesanan.checkout');
+    // ── TRANSAKSI (Check-In / Check-Out) ───────────────────────────────────────
+    // Menggantikan menu "Check-In" yang lama.
+    // Pusat operasional harian: lihat tamu aktif, proses check-in, proses check-out.
+    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+    Route::get('/transaksi/checkin', [TransaksiController::class, 'create'])->name('transaksi.create');
+    Route::post('/transaksi/checkin', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::post('/transaksi/{pemesanan}/checkout', [TransaksiController::class, 'checkout'])->name('transaksi.checkout');
+
+    // Redirect route lama /checkin → /transaksi/checkin (backward compatibility)
+    Route::get('/checkin', fn() => redirect()->route('transaksi.create'));
+    Route::post('/checkin', fn() => redirect()->route('transaksi.store'));
+    Route::post('/checkout/{pemesanan}', fn($pemesanan) => redirect()->route('transaksi.checkout', $pemesanan));
 
     // ── FAKTUR ─────────────────────────────────────────────────────────────────
-    // Daftar semua faktur/kwitansi
+    // Riwayat faktur — hanya pemesanan yang sudah selesai
+    // Setelah check-out, admin otomatis diarahkan ke faktur/show
     Route::get('/faktur', [FakturController::class, 'index'])->name('faktur.index');
-    // Detail satu faktur (untuk cetak)
     Route::get('/faktur/{pemesanan}', [FakturController::class, 'show'])->name('faktur.show');
 
     // ── PENDAPATAN ─────────────────────────────────────────────────────────────

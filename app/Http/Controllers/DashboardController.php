@@ -5,9 +5,12 @@
 | DashboardController — Hocky Guest House
 |--------------------------------------------------------------------------
 | Menangani halaman Dashboard utama.
-| Dashboard menampilkan:
-|   - Status semua kamar (tersedia / terisi / kotor)
-|   - Statistik ringkasan (total kamar, pendapatan hari ini, dll)
+| Dashboard sekarang adalah halaman INFORMASI saja:
+|   - Status semua kamar (tersedia / terisi / kotor / nonaktif)
+|   - Statistik ringkasan
+|   - Filter kamar: aktif / nonaktif / semua
+|
+| CATATAN: Aksi check-in dan check-out sudah pindah ke TransaksiController.
 |--------------------------------------------------------------------------
 */
 
@@ -20,34 +23,45 @@ class DashboardController extends Controller
 {
     /**
      * Menampilkan halaman dashboard.
-     * Mengambil semua data yang diperlukan lalu kirim ke view.
+     * Mendukung filter kamar: aktif (default), nonaktif, atau semua.
      */
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        // Ambil semua kamar beserta data pemesanan aktif & pelanggan-nya
-        // with('pemesananAktif.pelanggan') = eager loading, hindari N+1 query
-        // orderBy('nomor_kamar') = urutkan berdasarkan nomor kamar
-        $kamarList = Kamar::with('pemesananAktif.pelanggan')
-            ->orderBy('nomor_kamar')
-            ->get();
+        // Baca filter dari URL — default: hanya kamar aktif
+        $filterDashboard = $request->get('filter', 'aktif');
 
-        // Hitung statistik dari koleksi $kamarList yang sudah diambil
-        // (tidak perlu query tambahan ke database)
+        // Bangun query kamar
+        $query = Kamar::with('pemesananAktif.pelanggan')
+            ->orderBy('nomor_kamar');
+
+        // Terapkan filter is_aktif
+        if ($filterDashboard === 'aktif') {
+            $query->where('is_aktif', true);
+        } elseif ($filterDashboard === 'nonaktif') {
+            $query->where('is_aktif', false);
+        }
+        // 'semua' = tidak ada filter tambahan
+
+        $kamarList = $query->get();
+
+        // Hitung statistik — selalu dari kamar AKTIF saja (bukan bergantung filter tampilan)
+        $kamarAktif = Kamar::where('is_aktif', true)->get();
         $stats = [
-            'total'    => $kamarList->count(),                          // total semua kamar
-            'tersedia' => $kamarList->where('status', 'tersedia')->count(), // kamar kosong
-            'terisi'   => $kamarList->where('status', 'terisi')->count(),   // kamar terisi tamu
-            'kotor'    => $kamarList->where('status', 'kotor')->count(),    // kamar perlu dibersihkan
+            'total'    => $kamarAktif->count(),
+            'tersedia' => $kamarAktif->where('status', 'tersedia')->count(),
+            'terisi'   => $kamarAktif->where('status', 'terisi')->count(),
+            'kotor'    => $kamarAktif->where('status', 'kotor')->count(),
         ];
 
-        // Hitung total pendapatan hari ini dari tabel pembayaran
-        // whereDate() = filter berdasarkan tanggal saja (tanpa jam)
-        // sum() = jumlahkan kolom jumlah_bayar
+        // Pendapatan hari ini dari tabel pembayaran
         $pendapatanHariIni = Pembayaran::whereDate('tanggal_bayar', today())
             ->sum('jumlah_bayar');
 
-        // Kirim data ke view dashboard
-        // compact() = shortcut untuk ['kamarList' => $kamarList, 'stats' => $stats, ...]
-        return view('dashboard.index', compact('kamarList', 'stats', 'pendapatanHariIni'));
+        return view('dashboard.index', compact(
+            'kamarList',
+            'stats',
+            'pendapatanHariIni',
+            'filterDashboard'
+        ));
     }
 }

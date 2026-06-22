@@ -51,10 +51,10 @@
                 </div>
                 <div class="nav-group">
                     <span class="nav-group-label">Transaksi</span>
-                    <a href="{{ route('pemesanan.create') }}"
-                        class="nav-item {{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">
-                        <span class="nav-icon"><i data-lucide="log-in"></i></span>
-                        <span class="nav-label">Check-In</span>
+                    <a href="{{ route('transaksi.index') }}"
+                        class="nav-item {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">
+                        <span class="nav-icon"><i data-lucide="arrow-left-right"></i></span>
+                        <span class="nav-label">Transaksi</span>
                     </a>
                     <a href="{{ route('faktur.index') }}"
                         class="nav-item {{ request()->routeIs('faktur.*') ? 'active' : '' }}">
